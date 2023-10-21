@@ -46,7 +46,6 @@ The bot offers the following commands:
 ### Utility
 
 - `!ping`: Check the latency of the bot.
-- `!bot_creator`: Display information about the bot.
 - `!commands`: Display the list of available commands.
 
 ### Fun
