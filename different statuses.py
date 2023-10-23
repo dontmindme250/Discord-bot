@@ -59,3 +59,12 @@ async def on_ready():
     print(f'Logged in as {bot.user.name} (ID: {bot.user.id})')
     await bot.change_presence(activity=discord.Game(name="Custom Status"))
     
+
+# to change the status types just change this bit of code to the status you would like to have
+# (the code is in main.py)
+@bot.event 
+async def on_ready():
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='your custom status'))
+    print(f'Logged in as {bot.user.name} ({bot.user.id})')
+    
+# make sure the change the status content before running the bot.
