@@ -1,6 +1,7 @@
-# Heyo This is Zayne! I made this code and gave it to my bud dontmindme to use. check my profile (Zaynedrift) and join my discord server from there because dontmindme said no advertising >:c
+# Heyo This is Zayne! I made this code and gave it to my bud dontmindme to use. 
+# check my profile (Zaynedrift) and join my discord server from there because dontmindme said no advertising >:c
 
-
+# this is a basic logging fuction made by Zaynedrift
 # it sends a log to a channel specified by its name
 
 @bot.event
