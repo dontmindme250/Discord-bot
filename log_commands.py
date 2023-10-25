@@ -82,3 +82,4 @@ async def on_guild_role_delete(role):
 # change the string "log-channel" to your logging channel name
 # and it will log actions to that channel
 # note: as of now the logs are in normal messages, not embeds and are not very detailed.
+# Creator Note: Embeds will come soon so sit tight :3 (f**k you for removing my discord invite link for kfd. grrrrrr i'm gonna hit you with iloshi fathi >:c)
