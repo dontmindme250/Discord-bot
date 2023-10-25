@@ -44,14 +44,18 @@ async def ban(ctx, member: discord.Member, *, reason=None):
     else:
         await ctx.send("You don't have permission to ban members.")
 
-# will attempt to clear any amount of messages requested but will most likely ratelimit
+
 @bot.command()
 async def clear(ctx, amount=5):
     if ctx.author.guild_permissions.manage_messages:
-        await ctx.channel.purge(limit=amount+1)
-        await ctx.send(f'{amount} messages cleared.')
+        if amount > 100:
+            await ctx.send("You can only clear up to 100 messages at a time.")
+        else:
+            await ctx.channel.purge(limit=amount + 1)
+            await ctx.send(f'{amount} messages cleared.')
     else:
         await ctx.send("You don't have permission to clear messages.")
+
 
 
 @bot.command()
