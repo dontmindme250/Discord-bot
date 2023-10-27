@@ -333,7 +333,8 @@ async def numbergame(ctx):
             break
         except ValueError:
             await ctx.send("Please enter a valid number.")
-    
+
+trivia_questions = []    
 
 with open('trivia_questions.txt', 'r') as file:
     lines = file.read().split('\n\n')
