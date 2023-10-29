@@ -1,9 +1,24 @@
+import json
 import random
 from threading import Thread
-
+import asyncio
+from random import choices
 import discord
+from discord import *
 from discord.ext import commands
 
+
+
+def get_config(file_path):
+    with open(file_path, 'r') as file:
+        config = json.load(file)
+    return config
+
+
+
+config = get_config('config.json')
+token = config.get('bot_token')
+guild_id_config = config.get('guild_id')
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='!', intents=intents, help_command=None)
 
@@ -14,17 +29,17 @@ async def on_command_error(ctx, error):
         await ctx.send("Command not found, use !commands for info")
     
 # sends error message to a channel
-SERVER_ID = 123456789
-CHANNEL_ID = 123456789
+SERVER_ID = config.get("guild.id")
+CHANNEL_ID = config.get("channel_id")
 @bot.event
 async def on_error(event, *args, **kwargs):
     error_message = f"An error occurred in {event}: {args[0]}"
+    print(error_message)
 
-    server = bot.get_guild(SERVER_ID)
-    channel = server.get_channel(CHANNEL_ID)
-
-    if channel:
-        await channel.send(error_message)
+    # If the error is related to getting a channel, handle it
+    if "get_channel" in error_message:
+        # Handle the error here
+        pass
 
 
 @bot.event
@@ -32,13 +47,15 @@ async def on_ready():
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='your custom status'))
     print(f'Logged in as {bot.user.name} ({bot.user.id})')
 
-    # command to log dms the bot recives in a specific channel
+@bot.event
+async def on_message(message):
     if isinstance(message.channel, discord.DMChannel) and message.author != bot.user:
-        guild = bot.get_guild(guild id) # replace with guild id
-        channel = discord.utils.get(guild.text_channels, name='name')# replace with channel name
+        guild = bot.get_guild(guild_id_config)  # replace with guild id
+        channel = discord.utils.get(guild.text_channels, name='name')  # replace with channel name
         await channel.send(f'DM from: {message.author.name} id {message.author.id}\nContent: {message.content}')
 
     await bot.process_commands(message)
+
 
 
 @bot.command()
@@ -131,16 +148,14 @@ async def fortune(ctx):
     ]
     await ctx.send(random.choice(fortunes) )
 
-
-
-# set slowmode on a channel (made by zaynedrift)
+# set slowmode on a channel
 @bot.command()
 async def slowmode(ctx, duration: int):
    if ctx.author.guild_permissions.manage_channels:
     await ctx.channel.edit(slowmode_delay=duration)
     await ctx.send(f"Slowmode has been set to {duration} seconds in this channel")
 
-# remove slowmode from a channel (made by zaynedrift)
+# remove slowmode from a channel
 @bot.command()
 async def noslowmode(ctx):
    if ctx.author.guild_permissions.manage_channels:
@@ -149,42 +164,27 @@ async def noslowmode(ctx):
 
 
 @bot.command()
-async def commands(ctx):
-    commands_text = """
-**Available Commands:**
+async def help(ctx):
+    # Create an embed
+    embed = discord.Embed(
+        title="Available Commands",
+        description="Use these commands to interact with the bot!",
+        color=discord.Color.blue()
+    )
 
-**Moderation:**
-- `!kick [member] [reason]`: Kick a member from the server.
-- `!ban [member] [reason]`: Ban a member from the server.
-- `!clear [amount]`: Clear a specified number of messages.
+    # Add fields for each category of commands
+    embed.add_field(name="Moderation", value="- `!kick [member] [reason]`: Kick a member from the server.\n- `!ban [member] [reason]`: Ban a member from the server.\n- `!clear [amount]`: Clear a specified number of messages.", inline=False)
 
-**Utility:**
-- `!ping`: Check the latency of the bot.
-- `!slowmode` [slowmode seconds]: Set slowmode.
-- `!noslowmode`: Turn off slowmode.
+    embed.add_field(name="Utility", value="- `!ping`: Check the latency of the bot.\n- `!slowmode` [slowmode seconds]: Set slowmode.\n- `!noslowmode`: Turn off slowmode.", inline=False)
 
-**Fun:**
-- `!coinflip`: Simulate a coin flip.
-- `!diceroll [sides]`: Simulate a dice roll with a specified number of sides.
-- `!randomnumber [min] [max]`: Generate a random number within a specified range.
-- `!magic8ball [question]`: Ask the magic 8 ball a question.
-- `!joke`: Get a random joke.
-- `!riddle`: Get a random riddle.
-- `!fortune`: Get a fortune cookie message.
+    embed.add_field(name="Fun", value="- `!coinflip`: Simulate a coin flip.\n- `!diceroll [sides]`: Simulate a dice roll with a specified number of sides.\n- `!randomnumber [min] [max]`: Generate a random number within a specified range.\n- `!magic8ball [question]`: Ask the magic 8 ball a question.\n- `!joke`: Get a random joke.\n- `!riddle`: Get a random riddle.\n- `!fortune`: Get a fortune cookie message.", inline=False)
 
-**Games:**
-- `!trivia`: Play the Trivia Quiz Game.
-- `!wouldyourather`: Play the 'Would You Rather' Game.
-- `!numbergame [min] [max]`: Play the 'Guess the Number' Game.
-- `!wordgame`: Play the 'Guess the Word' Game.
-- `!rps [choice]`: Play Rock, Paper, Scissors with the bot.
+    embed.add_field(name="Games", value="- `!trivia`: Play the Trivia Quiz Game. (Currently broken)\n- `!wouldyourather`: Play the 'Would You Rather' Game.\n- `!numbergame [min] [max]`: Play the 'Guess the Number' Game.\n- `!wordgame`: Play the 'Guess the Word' Game.\n- `!rps [choice]`: Play Rock, Paper, Scissors with the bot.", inline=False)
 
-**Game Info:**
-- `!gameinfo`: Display more information about the available games.
+    embed.add_field(name="Game Info", value="- `!gameinfo`: Display more information about the available games.", inline=False)
 
-Please use these commands to interact with the bot!
-"""
-    await ctx.send(commands_text)
+    # Send the embed
+    await ctx.send(embed=embed)
 
 
 
@@ -336,44 +336,51 @@ async def numbergame(ctx):
         except ValueError:
             await ctx.send("Please enter a valid number.")
 
-trivia_questions = []    
+# trivia_questions = []    
 
-with open('trivia_questions.txt', 'r') as file:
-    lines = file.read().split('\n\n')
-    for line in lines:
-        question_lines = line.strip().split('\n')
-        question = question_lines[0]
-        options = question_lines[1].split(', ')
-        correct = question_lines[2]
-        trivia_questions.append({"question": question, "options": options, "correct": correct})
+# with open('trivia_questions.txt', 'r') as file:
+#     lines = file.read().split('\n\n')
+#     for line in lines:
+#         question_lines = line.strip().split('\n')
+#         question = question_lines[0]
+#         options = question_lines[1].split(', ')
+#         correct = question_lines[2]
+#         trivia_questions.append({"question": question, "options": options, "correct": correct})
 
 # trivia questions will be in a seperate file called "trivia_questions.txt"
-@bot.command()
-async def trivia(ctx):
-    await ctx.send("Welcome to the Trivia Quiz Game!")
 
-    random.shuffle(trivia_questions)
 
-    score = 0
 
-    def check(msg):
-        return msg.author == ctx.author and msg.channel == ctx.channel
+# CONTRIBUTOR NOTE
+###Trivia, is completly broken now, i wasn't able to get it to work, so it's just commented out, i don't have the original trivua_questions.txt file.
 
-    for i, question in enumerate(trivia_questions):
-        await ctx.send(f"Question {i + 1}: {question['question']}\nOptions: {', '.join(question['options'])}")
-        try:
-            response = await bot.wait_for("message", check=check, timeout=30)
-            response_text = response.content
-            if response_text.lower() == question["correct"].lower():
-                await ctx.send("Correct!")
-                score += 1
-            else:
-                await ctx.send(f"Sorry, the correct answer is {question['correct']}.")
 
-        except asyncio.TimeoutError:
-            await ctx.send("Time's up! The game is over.")
-            break
+# @bot.command()
+# async def trivia(ctx):
+#     await ctx.send("Welcome to the Trivia Quiz Game!")
 
-    await ctx.send(f"You scored {score}/{len(trivia_questions)} in the Trivia Quiz Game!")
+#     random.shuffle(trivia_questions)
 
-bot.run("your bot token") #replace with your bot token
+#     score = 0
+
+#     def check(msg):
+#         return msg.author == ctx.author and msg.channel == ctx.channel
+
+#     for i, question in enumerate(trivia_questions):
+#         await ctx.send(f"Question {i + 1}: {question['question']}\nOptions: {', '.join(question['options'])}")
+#         try:
+#             response = await bot.wait_for("message", check=check, timeout=30)
+#             response_text = response.content
+#             if response_text.lower() == question["correct"].lower():
+#                 await ctx.send("Correct!")
+#                 score += 1
+#             else:
+#                 await ctx.send(f"Sorry, the correct answer is {question['correct']}.")
+
+#         except asyncio.TimeoutError:
+#             await ctx.send("Time's up! The game is over.")
+#             break
+
+#     await ctx.send(f"You scored {score}/{len(trivia_questions)} in the Trivia Quiz Game!")
+
+bot.run(token) #replace with your bot token
