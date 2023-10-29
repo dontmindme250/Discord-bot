@@ -140,7 +140,7 @@ async def slowmode(ctx, duration: int):
     await ctx.channel.edit(slowmode_delay=duration)
     await ctx.send(f"Slowmode has been set to {duration} seconds in this channel")
 
-# remove slowmode from a channel
+# remove slowmode from a channel (made by zaynedrift)
 @bot.command()
 async def noslowmode(ctx):
    if ctx.author.guild_permissions.manage_channels:
