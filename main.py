@@ -12,21 +12,7 @@ bot = commands.Bot(command_prefix='!', intents=intents, help_command=None)
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send("Command not found, use !commands for info")
-    
-# sends error message to a channel
-SERVER_ID = 123456789
-CHANNEL_ID = 123456789
-@bot.event
-async def on_error(event, *args, **kwargs):
-    error_message = f"An error occurred in {event}: {args[0]}"
-
-    server = bot.get_guild(SERVER_ID)
-    channel = server.get_channel(CHANNEL_ID)
-
-    if channel:
-        await channel.send(error_message)
-
-
+        
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='your custom status'))
