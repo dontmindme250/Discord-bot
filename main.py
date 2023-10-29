@@ -131,7 +131,9 @@ async def fortune(ctx):
     ]
     await ctx.send(random.choice(fortunes) )
 
-# set slowmode on a channel
+
+
+# set slowmode on a channel (made by zaynedrift)
 @bot.command()
 async def slowmode(ctx, duration: int):
    if ctx.author.guild_permissions.manage_channels:
