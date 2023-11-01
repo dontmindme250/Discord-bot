@@ -183,6 +183,9 @@ selected_words = random.sample(word_list, 10)
 
 
 # guess the word game
+
+selected_words = []
+
 @bot.command()
 async def wordgame(ctx):
     word_to_guess = random.choice(selected_words)
