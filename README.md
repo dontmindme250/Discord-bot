@@ -55,4 +55,4 @@ Most of the code written by dontmindme
 - `!gameinfo`: Display more information about the available games.
 
 # Note
-Vumacc wrote all of this
+Vumacc wrote all of this, because dontmindme was too lazy to do it himself.
