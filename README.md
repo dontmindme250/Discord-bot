@@ -37,6 +37,3 @@ Most of the code written by [@dontmindme250](https://github.com/dontmindme250)
 `!wordgame`: Play the 'Guess the Word' Game. \
 `!rps [choice]`: Play Rock, Paper, Scissors with the bot. \
 `!gameinfo`: Display more information about the available games.
-
-# Note
-Vumacc wrote all of this, because dontmindme was too lazy to do it himself.
