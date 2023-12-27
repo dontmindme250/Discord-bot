@@ -2,6 +2,15 @@
 A simple and basic discord bot with moderation, utility, and fun commands. \
 Most of the code written by [@dontmindme250](https://github.com/dontmindme250)
 
+## Installation
+1. Create a Discord bot in the [Discord Developer Portal](https://discord.com/developers/applications) and get a bot token.
+
+3. Replace `"your bot token"` in the last line of the script with your bot token.
+
+```python
+bot.run("your bot token")
+```
+
 # Permissions needed
 - Send messages
 - View channels
