@@ -27,6 +27,7 @@ bot = commands.Bot(command_prefix='!', intents=intents, help_command=None)
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send("Command not found, use !commands for info")
+
     
 # sends error message to a channel
 SERVER_ID = config.get("guild.id")
@@ -41,14 +42,17 @@ async def on_error(event, *args, **kwargs):
         # Handle the error here
         pass
 
-
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='your custom status'))
     print(f'Logged in as {bot.user.name} ({bot.user.id})')
 
+
 @bot.event
 async def on_message(message):
+
+    #log dms the bot recives in a specific channel
+
     if isinstance(message.channel, discord.DMChannel) and message.author != bot.user:
         guild = bot.get_guild(guild_id_config)  # replace with guild id
         channel = discord.utils.get(guild.text_channels, name='name')  # replace with channel name
@@ -56,13 +60,73 @@ async def on_message(message):
 
     await bot.process_commands(message)
 
+# calculate (utility)
+@bot.command()
+async def calculate(ctx):
+    help_message = """To use the calculator, enter a equation, then the bot will solve it and send it to you. example: `5 + 3`
+    
+    note:
+    `+ = plus`
+    `- = minus`
+    `/ = divide`
+    `* = multiply`
+    """                           
+    await ctx.send(help_message)
+
+    try:
+        msg = await bot.wait_for("message", check=lambda message: message.author == ctx.author, timeout=60)
+        equation = msg.content
+        if not equation.startswith('!calculate'):
+            equation = '!calculate ' + equation
+        equation = equation[len('!calculate '):]
+
+        valid_characters = set("0123456789+-*/() ")
+        if not all(char in valid_characters for char in equation):
+            await ctx.send("Invalid characters in the expression.")
+            return
+
+        result = eval(equation)
+        await ctx.send(f'Result: {result}')
+    except asyncio.TimeoutError:
+        await ctx.send("Calculation request timed out. Please try again.")
 
 
+# poll (utility)
+@bot.command()
+async def poll(ctx, duration, question):
+    if not duration.isdigit():
+        await ctx.send("Invalid duration, please provide a valid number of seconds")
+        return
+
+    duration = int(duration)
+    
+    if duration <= 0:
+        await ctx.send("Duration must be a positive number of seconds")
+        return
+
+    embed = discord.Embed(
+        title="Vote with '✅' for Yes, or '❌' for No",
+        description=question,
+        color=discord.Colour(842593)
+    )
+
+    embed.set_footer(text="Untitled Poll Bot v1.0")
+    embed.set_author(name="Poll", icon_url="https://cdn-icons-png.flaticon.com/512/32/32175.png")
+
+    poll_message = await ctx.send(embed=embed)
+
+    for emoji in ('✅', '❌'):
+        await poll_message.add_reaction(emoji)
+
+    await asyncio.sleep(duration)
+    await ctx.send("The poll has ended")
+
+# ping (utility)
 @bot.command()
 async def ping(ctx):
     bot_latency = round(bot.latency * 1000)
 
-
+# kick (moderation)
 @bot.command()
 async def kick(ctx, member: discord.Member, *, reason=None):
     if ctx.author.guild_permissions.kick_members:
@@ -71,7 +135,7 @@ async def kick(ctx, member: discord.Member, *, reason=None):
     else:
         await ctx.send("You don't have permission to kick members.")
 
-
+# ban (moderation)
 @bot.command()
 async def ban(ctx, member: discord.Member, *, reason=None):
     if ctx.author.guild_permissions.ban_members:
@@ -80,7 +144,7 @@ async def ban(ctx, member: discord.Member, *, reason=None):
     else:
         await ctx.send("You don't have permission to ban members.")
 
-
+# clear (moderation)
 @bot.command()
 async def clear(ctx, amount=5):
     if ctx.author.guild_permissions.manage_messages:
@@ -93,25 +157,25 @@ async def clear(ctx, amount=5):
         await ctx.send("You don't have permission to clear messages.")
 
 
-
+# coinflip (fun)
 @bot.command()
 async def coinflip(ctx):
     result = random.choice(["Heads", "Tails"])
     await ctx.send(f"The coin landed on {result}!")
 
-
+# diceroll (fun)
 @bot.command()
 async def diceroll(ctx):
     roll = random.randint(1, 6)
     await ctx.send(f"The dice rolled a {roll}!")
 
-
+# random number (fun)
 @bot.command()
 async def randomnumber(ctx, min_value=1, max_value=100):
     result = random.randint(min_value, max_value)
     await ctx.send(f"Your random number is {result}!")
 
-
+# magic8ball (fun)
 @bot.command()
 async def magic8ball(ctx, *, question):
     responses = ["It is certain.", "It is decidedly so.", "Without a doubt.", "Yes - definitely.", "You may rely on it.",
@@ -122,7 +186,7 @@ async def magic8ball(ctx, *, question):
     response = random.choice(responses)
     await ctx.send(f"Question: {question}\nAnswer: {response}")
 
-
+# joke (fun)
 @bot.command()
 async def joke(ctx):
     jokes = [
@@ -130,7 +194,7 @@ async def joke(ctx):
    ]
     await ctx.send(random.choice(jokes))
 
-
+# riddle (fun)
 @bot.command()
 async def riddle(ctx):
     riddles = [
@@ -139,7 +203,7 @@ async def riddle(ctx):
     riddle = random.choice(riddles)
     await ctx.send(f"Riddle: {riddle['q']}\nAnswer: {riddle['a']}")
 
-
+# fortune (fun)
 @bot.command()
 async def fortune(ctx):
     fortunes = [
@@ -148,13 +212,15 @@ async def fortune(ctx):
     ]
     await ctx.send(random.choice(fortunes) )
 
-# set slowmode on a channel
+
+# set slowmode on a channel (utility) (made by zaynedrift)
 @bot.command()
 async def slowmode(ctx, duration: int):
    if ctx.author.guild_permissions.manage_channels:
     await ctx.channel.edit(slowmode_delay=duration)
     await ctx.send(f"Slowmode has been set to {duration} seconds in this channel")
 
+# remove slowmode (utility)
 # remove slowmode from a channel (made by zaynedrift)
 @bot.command()
 async def noslowmode(ctx):
@@ -174,8 +240,15 @@ async def help(ctx):
 
     # Add fields for each category of commands
     embed.add_field(name="Moderation", value="- `!kick [member] [reason]`: Kick a member from the server.\n- `!ban [member] [reason]`: Ban a member from the server.\n- `!clear [amount]`: Clear a specified number of messages.", inline=False)
-
     embed.add_field(name="Utility", value="- `!ping`: Check the latency of the bot.\n- `!slowmode` [slowmode seconds]: Set slowmode.\n- `!noslowmode`: Turn off slowmode.", inline=False)
+
+**Utility:**
+- `!ping`: Check the latency of the bot.
+- `!slowmode` [slowmode seconds]: Set slowmode.
+- `!noslowmode`: Turn off slowmode.
+- `!calculate`: answers a simple math equation.
+- `!poll:` creates a poll
+
 
     embed.add_field(name="Fun", value="- `!coinflip`: Simulate a coin flip.\n- `!diceroll [sides]`: Simulate a dice roll with a specified number of sides.\n- `!randomnumber [min] [max]`: Generate a random number within a specified range.\n- `!magic8ball [question]`: Ask the magic 8 ball a question.\n- `!joke`: Get a random joke.\n- `!riddle`: Get a random riddle.\n- `!fortune`: Get a fortune cookie message.", inline=False)
 
@@ -188,7 +261,7 @@ async def help(ctx):
 
 
 
-
+# wordgame (game)
 with open("words.txt") as file:
     word_list = [line.strip() for line in file]
 
@@ -196,7 +269,8 @@ with open("words.txt") as file:
 selected_words = random.sample(word_list, 10)
 
 
-# guess the word game
+selected_words = []
+
 @bot.command()
 async def wordgame(ctx):
     word_to_guess = random.choice(selected_words)
@@ -247,7 +321,7 @@ async def wordgame(ctx):
     else:
         await ctx.send(f"Sorry, you're out of tries. The word was '{word_to_guess}'.")
 
-
+# would you rather (game)
 @bot.command()
 async def wouldyourather(ctx):
     await ctx.send("Welcome to the 'Would You Rather' Game!")
@@ -279,7 +353,7 @@ async def wouldyourather(ctx):
             break
  
 
-#rock paper scissors game        
+#rock paper scissors (game)
 @bot.command()
 async def rps(ctx, user_choice: str):
     if user_choice not in choices:
@@ -304,7 +378,7 @@ async def rps(ctx, user_choice: str):
     await ctx.send(result)
                     
            
-# guess the number game
+# guess the number (game)
 @bot.command()
 async def numbergame(ctx):
     number_to_guess = random.randint(1, 100)
@@ -336,7 +410,11 @@ async def numbergame(ctx):
         except ValueError:
             await ctx.send("Please enter a valid number.")
 
-# trivia_questions = []    
+# trivia (game)
+trivia_questions = []    
+
+# CONTRIBUTOR NOTE
+# rivia, is completly broken now, i wasn't able to get it to work, so it's just commented out, i don't have the original trivua_questions.txt file
 
 # with open('trivia_questions.txt', 'r') as file:
 #     lines = file.read().split('\n\n')
@@ -348,12 +426,6 @@ async def numbergame(ctx):
 #         trivia_questions.append({"question": question, "options": options, "correct": correct})
 
 # trivia questions will be in a seperate file called "trivia_questions.txt"
-
-
-
-# CONTRIBUTOR NOTE
-###Trivia, is completly broken now, i wasn't able to get it to work, so it's just commented out, i don't have the original trivua_questions.txt file.
-
 
 # @bot.command()
 # async def trivia(ctx):

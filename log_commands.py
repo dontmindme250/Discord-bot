@@ -1,5 +1,4 @@
 # Heyo This is Zayne! I made this code and gave it to my bud dontmindme to use. 
-# check my profile (Zaynedrift) and join my discord server from there because dontmindme said no advertising >:c
 
 # this is a basic logging fuction made by Zaynedrift
 # it sends a log to a channel specified by its name
@@ -82,4 +81,4 @@ async def on_guild_role_delete(role):
 # change the string "log-channel" to your logging channel name
 # and it will log actions to that channel
 # note: as of now the logs are in normal messages, not embeds and are not very detailed.
-# Creator Note: Embeds will come soon so sit tight :3 (f**k you for removing my discord invite link for kfd. grrrrrr i'm gonna hit you with iloshi fathi >:c)
+# Creator Note: Embeds will come soon so sit tight :3
