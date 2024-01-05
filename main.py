@@ -1,13 +1,15 @@
+import asyncio
 import json
 import random
-from threading import Thread
-import asyncio
 from random import choices
+
 import discord
 from discord import *
 from discord.ext import commands
 
 
+# NOTE: this code hasnt been tested yet, so it may not work
+# but it will be tested by the next update when the trivia command works
 
 def get_config(file_path):
     with open(file_path, 'r') as file:
@@ -39,7 +41,7 @@ async def on_error(event, *args, **kwargs):
 
     # If the error is related to getting a channel, handle it
     if "get_channel" in error_message:
-        # Handle the error here
+        # handle the error here
         pass
 
 @bot.event
@@ -51,7 +53,7 @@ async def on_ready():
 @bot.event
 async def on_message(message):
 
-    #log dms the bot recives in a specific channel
+    # log dms the bot recives in a specific channel
 
     if isinstance(message.channel, discord.DMChannel) and message.author != bot.user:
         guild = bot.get_guild(guild_id_config)  # replace with guild id
@@ -125,6 +127,7 @@ async def poll(ctx, duration, question):
 @bot.command()
 async def ping(ctx):
     bot_latency = round(bot.latency * 1000)
+    await ctx.send(f'Pong! {bot_latency}ms')
 
 # kick (moderation)
 @bot.command()
@@ -239,26 +242,44 @@ async def help(ctx):
     )
 
     # Add fields for each category of commands
-    embed.add_field(name="Moderation", value="- `!kick [member] [reason]`: Kick a member from the server.\n- `!ban [member] [reason]`: Ban a member from the server.\n- `!clear [amount]`: Clear a specified number of messages.", inline=False)
-    embed.add_field(name="Utility", value="- `!ping`: Check the latency of the bot.\n- `!slowmode` [slowmode seconds]: Set slowmode.\n- `!noslowmode`: Turn off slowmode.", inline=False)
+    embed.add_field(name="Moderation", value=""" 
+    - `!kick [member] [reason]`: Kick a member from the server.
+    - `!ban [member] [reason]`: Ban a member from the server.
+    - `!clear [amount]`: Clear a specified number of messages.
+    """ , inline=False)
+    
+    embed.add_field(name="Utility", value="""
+    - `!ping`: Check the latency of the bot.
+    - `!slowmode` [slowmode seconds]: Set slowmode.
+    - `!noslowmode`: Turn off slowmode.
+    - `!calculate`: answers a simple math equation.
+    - `!poll:` creates a poll
+    """, inline=False)
 
-**Utility:**
-- `!ping`: Check the latency of the bot.
-- `!slowmode` [slowmode seconds]: Set slowmode.
-- `!noslowmode`: Turn off slowmode.
-- `!calculate`: answers a simple math equation.
-- `!poll:` creates a poll
+    embed.add_field(name="Fun", value=""" 
+    - `!coinflip`: Simulate a coin flip. 
+    - `!diceroll [sides]`: Simulate a dice roll with a specified number of sides. 
+    - `!randomnumber [min] [max]`: Generate a random number within a specified range.
+    - `!magic8ball [question]`: Ask the magic 8 ball a question.
+    - `!joke`: Get a random joke. 
+    - `!riddle`: Get a random riddle. 
+    - `!fortune`: Get a fortune cookie message.
+    """, inline=False)
 
+    embed.add_field(name="Games", value="""
+    - `!trivia`: Play the Trivia Quiz Game. (Currently broken) 
+    - `!wouldyourather`: Play the 'Would You Rather' Game.
+    - `!numbergame [min] [max]`: Play the 'Guess the Number' Game.
+    - `!wordgame`: Play the 'Guess the Word' Game.
+    - `!rps [choice]`: Play Rock, Paper, Scissors with the bot.
+    """, inline=False)
 
-    embed.add_field(name="Fun", value="- `!coinflip`: Simulate a coin flip.\n- `!diceroll [sides]`: Simulate a dice roll with a specified number of sides.\n- `!randomnumber [min] [max]`: Generate a random number within a specified range.\n- `!magic8ball [question]`: Ask the magic 8 ball a question.\n- `!joke`: Get a random joke.\n- `!riddle`: Get a random riddle.\n- `!fortune`: Get a fortune cookie message.", inline=False)
-
-    embed.add_field(name="Games", value="- `!trivia`: Play the Trivia Quiz Game. (Currently broken)\n- `!wouldyourather`: Play the 'Would You Rather' Game.\n- `!numbergame [min] [max]`: Play the 'Guess the Number' Game.\n- `!wordgame`: Play the 'Guess the Word' Game.\n- `!rps [choice]`: Play Rock, Paper, Scissors with the bot.", inline=False)
-
-    embed.add_field(name="Game Info", value="- `!gameinfo`: Display more information about the available games.", inline=False)
+    embed.add_field(name="Game Info", value="""
+    - `!gameinfo`: Display more information about the available games.
+    """, inline=False)
 
     # Send the embed
     await ctx.send(embed=embed)
-
 
 
 # wordgame (game)
@@ -354,6 +375,7 @@ async def wouldyourather(ctx):
  
 
 #rock paper scissors (game)
+choices = ["rock", "paper", "scissors"]
 @bot.command()
 async def rps(ctx, user_choice: str):
     if user_choice not in choices:
@@ -410,6 +432,9 @@ async def numbergame(ctx):
         except ValueError:
             await ctx.send("Please enter a valid number.")
 
+
+# trivia command will be added back in future update
+
 # trivia (game)
 trivia_questions = []    
 
@@ -455,4 +480,4 @@ trivia_questions = []
 
 #     await ctx.send(f"You scored {score}/{len(trivia_questions)} in the Trivia Quiz Game!")
 
-bot.run(token) #replace with your bot token
+bot.run(token)
