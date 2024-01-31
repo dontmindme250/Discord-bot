@@ -431,53 +431,48 @@ async def numbergame(ctx):
             break
         except ValueError:
             await ctx.send("Please enter a valid number.")
-
-
-# trivia command will be added back in future update
+            
 
 # trivia (game)
 trivia_questions = []    
 
-# CONTRIBUTOR NOTE
-# rivia, is completly broken now, i wasn't able to get it to work, so it's just commented out, i don't have the original trivua_questions.txt file
+ with open('trivia_questions.txt', 'r') as file:
+     lines = file.read().split('\n\n')
+     for line in lines:
+         question_lines = line.strip().split('\n')
+         question = question_lines[0]
+         options = question_lines[1].split(', ')
+         correct = question_lines[2]
+         trivia_questions.append({"question": question, "options": options, "correct": correct})
 
-# with open('trivia_questions.txt', 'r') as file:
-#     lines = file.read().split('\n\n')
-#     for line in lines:
-#         question_lines = line.strip().split('\n')
-#         question = question_lines[0]
-#         options = question_lines[1].split(', ')
-#         correct = question_lines[2]
-#         trivia_questions.append({"question": question, "options": options, "correct": correct})
+ trivia questions will be in a seperate file called "trivia_questions.txt"
 
-# trivia questions will be in a seperate file called "trivia_questions.txt"
+ @bot.command()
+ async def trivia(ctx):
+     await ctx.send("Welcome to the Trivia Quiz Game!")
 
-# @bot.command()
-# async def trivia(ctx):
-#     await ctx.send("Welcome to the Trivia Quiz Game!")
+     random.shuffle(trivia_questions)
 
-#     random.shuffle(trivia_questions)
+     score = 0
 
-#     score = 0
+     def check(msg):
+         return msg.author == ctx.author and msg.channel == ctx.channel
 
-#     def check(msg):
-#         return msg.author == ctx.author and msg.channel == ctx.channel
+     for i, question in enumerate(trivia_questions):
+         await ctx.send(f"Question {i + 1}: {question['question']}\nOptions: {', '.join(question['options'])}")
+         try:
+             response = await bot.wait_for("message", check=check, timeout=30)
+             response_text = response.content
+             if response_text.lower() == question["correct"].lower():
+                 await ctx.send("Correct!")
+                 score += 1
+             else:
+                 await ctx.send(f"Sorry, the correct answer is {question['correct']}.")
 
-#     for i, question in enumerate(trivia_questions):
-#         await ctx.send(f"Question {i + 1}: {question['question']}\nOptions: {', '.join(question['options'])}")
-#         try:
-#             response = await bot.wait_for("message", check=check, timeout=30)
-#             response_text = response.content
-#             if response_text.lower() == question["correct"].lower():
-#                 await ctx.send("Correct!")
-#                 score += 1
-#             else:
-#                 await ctx.send(f"Sorry, the correct answer is {question['correct']}.")
+         except asyncio.TimeoutError:
+             await ctx.send("Time's up! The game is over.")
+             break
 
-#         except asyncio.TimeoutError:
-#             await ctx.send("Time's up! The game is over.")
-#             break
-
-#     await ctx.send(f"You scored {score}/{len(trivia_questions)} in the Trivia Quiz Game!")
+     await ctx.send(f"You scored {score}/{len(trivia_questions)} in the Trivia Quiz Game!")
 
 bot.run(token)
