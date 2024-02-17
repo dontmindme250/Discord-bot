@@ -1,17 +1,19 @@
 # Basic discord bot
+
 A simple and basic discord bot with moderation, utility, and fun commands. \
 Most of the code written by [@dontmindme250](https://github.com/dontmindme250)
 
 ## Installation
-1. Create a new application in the [Discord Developer Portal](https://discord.com/developers/applications) and get a bot token.
 
-3. Replace `BOT_TOKEN_HERE` in the last line of the config.json with your bot token.
+1. Create a new application in the [Discord Developer Portal](https://discord.com/developers/applications) and get a bot token.
+2. Replace `BOT_TOKEN_HERE` in the last line of the config.json with your bot token.
 
 ```json
 "bot_token": "BOT_TOKEN_HERE",
 ```
 
 # Permissions needed
+
 - Send messages
 - manage messages
 - View channels
@@ -20,7 +22,10 @@ Most of the code written by [@dontmindme250](https://github.com/dontmindme250)
 - Kick members
 - Ban members
 
+or just give it admin
+
 # Commands
+
 ### Moderation:
 `!kick [member] [reason]`: Kick a member from the server. \
 `!ban [member] [reason]`: Ban a member from the server. \
@@ -47,3 +52,12 @@ Most of the code written by [@dontmindme250](https://github.com/dontmindme250)
 `!wordgame`: Play the 'Guess the Word' Game. \
 `!rps [choice]`: Play Rock, Paper, Scissors with the bot. \
 `!gameinfo`: Display more information about the available games.
+
+## extra
+
+### more statuses
+change the bots status types with the code in `different_statuses.py`
+
+### log commands
+add a simple logging function to the bot, add the code in `log_commands.py` into the main 
+file
