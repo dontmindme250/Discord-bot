@@ -5,14 +5,15 @@ Most of the code written by [@dontmindme250](https://github.com/dontmindme250)
 ## Installation
 1. Create a new application in the [Discord Developer Portal](https://discord.com/developers/applications) and get a bot token.
 
-3. Replace `"your bot token"` in the last line of the script with your bot token.
+3. Replace `BOT_TOKEN_HERE` in the last line of the config.json with your bot token.
 
-```python
-bot.run("your bot token")
+```json
+"bot_token": "BOT_TOKEN_HERE",
 ```
 
 # Permissions needed
 - Send messages
+- manage messages
 - View channels
 - Manage channels
 - Read message history
