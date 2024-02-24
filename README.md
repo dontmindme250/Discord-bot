@@ -3,6 +3,19 @@
 A simple and basic discord bot with moderation, utility, and fun commands. \
 Most of the code written by [@dontmindme250](https://github.com/dontmindme250)
 
+# Table of Contents
+
+- [Installation](#installation)
+- [Permissions needed](#permissions-needed)
+- [Commands](#commands)
+	- [Moderation](#moderation)
+	- [Utility](#utility)
+	- [Fun](#fun)
+	- [Games](#games)
+- [Extra](#extra)
+	- [More statuses](#more-statuses)
+	- [Log commands](#log-commands)
+
 ## Installation
 
 1. Create a new application in the [Discord Developer Portal](https://discord.com/developers/applications) and get a bot token.
