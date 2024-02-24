@@ -5,6 +5,7 @@ Most of the code written by [@dontmindme250](https://github.com/dontmindme250)
 
 # Table of Contents
 
+- [contributors](#contributors)
 - [Installation](#installation)
 - [Permissions needed](#permissions-needed)
 - [Commands](#commands)
@@ -15,6 +16,18 @@ Most of the code written by [@dontmindme250](https://github.com/dontmindme250)
 - [Extra](#extra)
 	- [More statuses](#more-statuses)
 	- [Log commands](#log-commands)
+
+# Contributors
+
+This project exists thanks to all the people who contribute. 
+
+
+- [@dontmindme250](https://github.com/dontmindme250) 
+- [@Vumacc](https://github.com/Vumacc)
+- [@Zaynedrift](https://github.com/Zaynedrift)
+- [@merowo](https://github.com/merowo)
+
+A big thank you to everyone who has helped this project come alive!
 
 ## Installation
 
